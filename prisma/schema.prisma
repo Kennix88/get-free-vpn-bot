@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserTelegramMetaData {
+  id           String   @id @default(cuid())
+  isLive       Boolean  @default(false) @map("is_live")
+  isPremium    Boolean  @default(false) @map("is_premium")
+  isRtl        Boolean  @default(false) @map("is_rtl")
+  firstName    String?  @map("first_name")
+  lastName     String?  @map("last_name")
+  username     String?
+  languageCode String   @map("language_code")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @unique @map("user_id")
+
+  @@map("user_telegram_meta_data")
+}
+
+model User {
+  id                String                @id @default(cuid())
+  telegramId        String?               @unique @map("telegram_id")
+  inviterTelegramId String?               @map("inviter_telegram_id")
+  username          String                @unique
+  createdAt         DateTime              @default(now()) @map("created_at")
+  updatedAt         DateTime              @updatedAt @map("updated_at")
+  subscriptions     Subscriptions?
+  telegramMetaData  UserTelegramMetaData?
+
+  @@map("user")
+}
+
+model Subscriptions {
+  id        String                 @id @default(cuid())
+  status    SubscriptionStatusEnum
+  login     String                 @unique @default(cuid())
+  token     String                 @unique @default(cuid())
+  createdAt DateTime               @default(now()) @map("created_at")
+  updatedAt DateTime               @updatedAt @map("updated_at")
+  user      User                   @relation(fields: [userId], references: [id])
+  userId    String                 @unique @map("user_id")
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatusEnum {
+  ACTIVE
+  EXPERED
+  DISABLED
+  BANNED
+}
