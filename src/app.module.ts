@@ -7,15 +7,12 @@ import { PrismaModule } from 'nestjs-prisma'
 
 import { AuthModule } from './auth/auth.module'
 import { ExceptionsFilter } from './common'
-import { CommonModule } from './common/common.module'
 import { configuration, loggerOptions } from './config'
-import { SampleModule } from './sample/sample.module'
 
 @Module({
   imports: [
     // https://github.com/iamolegga/nestjs-pino
     LoggerModule.forRoot(loggerOptions),
-    // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -24,11 +21,6 @@ import { SampleModule } from './sample/sample.module'
     ServeStaticModule.forRoot({
       rootPath: `${__dirname}/../public`,
     }),
-    /**
-     * https://docs.nestjs.com/recipes/prisma
-     * https://www.prisma.io/nestjs
-     * https://nestjs-prisma.dev
-     */
     PrismaModule.forRootAsync({
       isGlobal: true,
       useFactory: (config: ConfigService) => ({
@@ -43,12 +35,7 @@ import { SampleModule } from './sample/sample.module'
       }),
       inject: [ConfigService],
     }),
-    // Global
-    CommonModule,
-    // Authentication
     AuthModule,
-    // API Sample
-    SampleModule,
   ],
   providers: [
     {

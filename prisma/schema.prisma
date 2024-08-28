@@ -34,6 +34,7 @@ model User {
   updatedAt         DateTime              @updatedAt @map("updated_at")
   subscriptions     Subscriptions?
   telegramMetaData  UserTelegramMetaData?
+  language          Language[]
 
   @@map("user")
 }
@@ -56,4 +57,35 @@ enum SubscriptionStatusEnum {
   EXPERED
   DISABLED
   BANNED
+}
+
+model Servers {
+  id        String   @id @default(cuid())
+  enabled   Boolean  @default(true)
+  name      String
+  key       String   @unique
+  url       String
+  port      Int
+  network   Decimal
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  counryKey String
+  counry    String
+  city      String
+
+  @@map("servers")
+}
+
+model Language {
+  id         String  @id @default(cuid())
+  name       String
+  nativeName String  @map("native_name")
+  iso6391    String  @unique @map("iso_639_1")
+  iso6392    String  @unique @map("iso_639_2")
+  iso6393    String  @unique @map("iso_639_3")
+  rtl        Boolean @default(false)
+  user       User    @relation(fields: [userId], references: [id])
+  userId     String  @map("user_id")
+
+  @@map("language")
 }
